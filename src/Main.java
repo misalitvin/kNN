@@ -2,8 +2,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -54,20 +53,38 @@ public class Main {
                     values[i]=Double.parseDouble(row[i]);
                 }
                 int[] indexes = indexes(vectors,values,k);
-                int q = 0,w=0,e=0;
-                for(int i = 0;i<indexes.length;i++){
-                    switch (types[indexes[i]]){
-                        case "Iris-setosa" : q++; break;
-                        case "Iris-versicolor" : w++; break;
-                        case "Iris-virginica" : e++; break;
+
+                Map<String, Integer> origintypes = new HashMap<>();
+                for (String value : types) {
+                    if (!origintypes.containsKey(value)) {
+                        origintypes.put(value, 0);
                     }
                 }
-                String otvet;
-                if(q>=w && q>=e){
-                    otvet = "Iris-setosa";
-                }else if(w>=q && w>=e){
-                    otvet = "Iris-versicolor";
-                }else otvet = "Iris-virginica";
+
+                for(int i = 0;i<indexes.length;i++){
+                    for (Map.Entry<String, Integer> entry : origintypes.entrySet()) {
+                        if(types[indexes[i]].equals(entry.getKey())){
+                            entry.setValue(entry.getValue() + 1);
+                        }
+                    }
+                }
+
+                String otvet = null;
+                int maxValue = 0;
+                int countMaxValue = 0;
+                Random random = new Random();
+                for (Map.Entry<String, Integer> entry : origintypes.entrySet()) {
+                    if (entry.getValue() > maxValue) {
+                        otvet = entry.getKey();
+                        maxValue = entry.getValue();
+                        countMaxValue = 1;
+                    } else if (entry.getValue() == maxValue) {
+                        countMaxValue++;
+                        if (random.nextInt(countMaxValue) == 0) {
+                            otvet = entry.getKey();
+                        }
+                    }
+                }
 
                 if(otvet.equals(row[row.length-1])) correctansw++;
                 allanswers++;
@@ -76,10 +93,6 @@ public class Main {
             e.printStackTrace();
         }
         System.out.println((double)correctansw/allanswers);
-
-
-
-
 
     }
     public static int[] indexes(double[][] training, double[] test,int k){

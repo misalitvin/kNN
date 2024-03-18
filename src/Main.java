@@ -93,7 +93,6 @@ public class Main {
             e.printStackTrace();
         }
         System.out.println((double)correctansw/allanswers);
-
     }
     public static int[] indexes(double[][] training, double[] test,int k){
         double[][] lengths = new double[k][2];
